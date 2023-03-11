@@ -27,6 +27,8 @@
 input {
    margin-right: 20px;
    border-radius: 5px;
+   border: none;
+   box-shadow:2px 2px 2px 2px rgb(144, 170, 173) ;
 }
 
 .search-form button {
