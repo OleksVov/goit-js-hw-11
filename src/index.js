@@ -38,7 +38,7 @@ function onSearchImages (event) {
       if(response.totalHits > 40) {
         Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
     }
-    refs.loadMoreBtn.classList.remove('hidden');
+    
     newsApiService.resetPage();
     
     clearImagesContainer();
@@ -62,20 +62,20 @@ function clearImagesContainer() {
 async function fetchImages(url) {
   let data;
   try {
-    refs.loadMoreBtn.classList.add('hidden');
 
     const response = await axios.get(url).then( response => {
       data = response.data;
       if(data.hits.length === 0) {
+        refs.loadMoreBtn.classList.add('hidden')
         return Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
       } else if (newsApiService.page*40 >= data.totalHits) {
+        refs.loadMoreBtn.classList.add('hidden')
         return Notiflix.Notify.info("We're sorry, but you've reached the end of search results.")
       } else { refs.loadMoreBtn.classList.remove('hidden');}
-     
-    });
-
-    return data;
   
+    });
+   
+    return data;
   } catch (error) {
     console.error(error);
   }
