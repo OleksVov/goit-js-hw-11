@@ -1,4 +1,4 @@
-export default class NewsApiService {
+export default class CreateUrl {
     constructor() {
         this.valueForSearch = "";
         this.page = 1;

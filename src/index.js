@@ -2,11 +2,11 @@ import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import axios from "axios";
-import  NewsApiService from './js/api-service';
+import  CreateUrl from './js/create-url';
 import scroll from './js/scroll';
 import './css/styles.css';
 
-const newsApiService = new NewsApiService();
+const createUrl = new CreateUrl();
 
 const refs = {
     form: document.querySelector('#search-form'),
@@ -28,13 +28,13 @@ let gallery = new SimpleLightbox('.gallery a', {
 function onSearchImages (event) {
     event.preventDefault();
 
-    newsApiService.query = event.currentTarget.elements.searchQuery.value.trim();
-    newsApiService.resetPage();
-    if(newsApiService.query === "") {
+    createUrl.query = event.currentTarget.elements.searchQuery.value.trim();
+    createUrl.resetPage();
+    if(createUrl.query === "") {
      return Notiflix.Notify.info("Please enter search parameters.");
     };
 
-      fetchImages(newsApiService.getUrl()).then(response => {
+      fetchImages(createUrl.getUrl()).then(response => {
       if(response.totalHits > 40) {
         Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
     }
@@ -49,8 +49,8 @@ function onSearchImages (event) {
 };
 
 function onLoadMore() {
-  newsApiService.incrementPage();
-    fetchImages(newsApiService.getUrl()).then(response => {renderGallery(response.hits);
+  createUrl.incrementPage();
+    fetchImages(createUrl.getUrl()).then(response => {renderGallery(response.hits);
       scroll();
     }); 
 };
@@ -68,7 +68,7 @@ async function fetchImages(url) {
       if(data.hits.length === 0) {
         refs.loadMoreBtn.classList.add('hidden')
         return Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
-      } else if (newsApiService.page*40 >= data.totalHits) {
+      } else if (createUrl.page*40 >= data.totalHits) {
         refs.loadMoreBtn.classList.add('hidden')
         return Notiflix.Notify.info("We're sorry, but you've reached the end of search results.")
       } else { refs.loadMoreBtn.classList.remove('hidden');}
