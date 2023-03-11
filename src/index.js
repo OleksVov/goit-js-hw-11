@@ -3,6 +3,7 @@ import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import axios from "axios";
 import  NewsApiService from './js/api-service';
+import './css/styles.css';
 
 const refs = {
     form: document.querySelector('#search-form'),
@@ -11,32 +12,53 @@ const refs = {
 }
 
 const newsApiService = new NewsApiService();
-// const KEY_API = '34240691-69b0febad4566a0b07df5e473';
-// const BASE_URL = 'https://pixabay.com/api/';
-let valueForSearch = "";
 
+refs.loadMoreBtn.classList.add('hidden');
 refs.form.addEventListener('submit', onSearchImages);
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
+let gallery = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
+});
+
+// gallery.on('show.simplelightbox');
+
 function onSearchImages (event) {
     event.preventDefault();
-    valueForSearch = event.currentTarget.elements.searchQuery.value;
-    newsApiService.fetchImages(valueForSearch);
-
-    // .then(images => renderGallery(images.hits))
-    // .catch((error) => console.log(error));
+    newsApiService.query = event.currentTarget.elements.searchQuery.value;
+    if(newsApiService.query === "") {
+     return Notiflix.Notify.info("Sorry, there are no images matching your search query. Please try again.");
+    }
+    refs.loadMoreBtn.classList.add('hidden');
+    newsApiService.resetPage();
+    newsApiService.fetchImages()
+    .then(hits => {
+      console.log(hits);
+      if(hits.lenght = 0) {
+        return Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+      }
+      clearImagesContainer();
+      renderGallery(hits);
+      refs.loadMoreBtn.classList.remove('hidden');
+    })
+    .catch((error) => console.log(error));
 };
 
 function onLoadMore() {
-    newsApiService.fetchImages(valueForSearch);
+    newsApiService.fetchImages().then(renderGallery).catch((error) => console.log(error));
 };
 
+function clearImagesContainer() {
+  refs.gallery.innerHTML = "";
+}
 
-
-function renderGallery(images) {
-    const markup = images
+function renderGallery(hits) {
+    const markup = hits
     .map(
         ({
+          largeImageURL,
         webformatURL,
         tags,
         likes,
@@ -45,7 +67,7 @@ function renderGallery(images) {
         downloads,
       }) => {
         return `<div class="photo-card">
-    <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+    <a href="${largeImageURL}"><img src="${webformatURL}" alt="${tags}" loading="lazy"/></a> 
     <div class="info">
       <p class="info-item">
         <b>Lakes: ${likes}</b>
@@ -63,6 +85,7 @@ function renderGallery(images) {
   </div>`; })
   .join("");
   refs.gallery.insertAdjacentHTML('beforeend', markup);
+  gallery.refresh();
 }
 
 
