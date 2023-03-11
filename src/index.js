@@ -28,8 +28,8 @@ let gallery = new SimpleLightbox('.gallery a', {
 function onSearchImages (event) {
     event.preventDefault();
 
-    newsApiService.query = event.currentTarget.elements.searchQuery.value;
-
+    newsApiService.query = event.currentTarget.elements.searchQuery.value.trim();
+    newsApiService.resetPage();
     if(newsApiService.query === "") {
      return Notiflix.Notify.info("Please enter search parameters.");
     };
@@ -39,7 +39,7 @@ function onSearchImages (event) {
         Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
     }
     
-    newsApiService.resetPage();
+   
     
     clearImagesContainer();
     renderGallery(response.hits);
