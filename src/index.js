@@ -6,8 +6,6 @@ import  NewsApiService from './js/api-service';
 import scroll from './js/scroll';
 import './css/styles.css';
 
-
-const axios = require('axios').default;
 const newsApiService = new NewsApiService();
 
 const refs = {
